@@ -8,6 +8,7 @@ import api_service from "./api/api_service";
 import SignIn from "views/auth/SignIn";
 import Dashboard from "views/admin/default";
 import Lessons from "views/admin/lesson";
+import Stagges from "views/admin/stagges";
 import Quizzes from "views/admin/quizzes";
 import Questions from "views/admin/questions";
 import Category from "views/admin/category";
@@ -50,6 +51,16 @@ const App = () => {
             <ProtectRoute
               children={
                 <AdminLayout current="Lessons" children={<Lessons />} />
+              }
+            />
+          }
+        />
+         <Route
+          path="stagges"
+          element={
+            <ProtectRoute
+              children={
+                <AdminLayout current="Stagges" children={<Stagges />} />
               }
             />
           }

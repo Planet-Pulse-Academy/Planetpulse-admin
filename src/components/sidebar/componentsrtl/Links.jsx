@@ -10,6 +10,7 @@ import {
   MessageQuestion,
   People,
   Personalcard,
+  Stellar,
 } from "iconsax-react";
 import React from "react";
 import { Link, useLocation, useMatch, useResolvedPath } from "react-router-dom";
@@ -28,6 +29,11 @@ export function SidebarLinks() {
         route={"/lesson"}
         icon={<Book size="27" variant="Bulk" />}
         name={"Lessons"}
+      />
+      <Links
+        route={"/stagges"}
+        icon={<Stellar size="27" variant="Bulk" />}
+        name={"Stagges"}
       />
       <Links
         route={"/quizzes"}

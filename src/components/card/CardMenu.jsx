@@ -4,7 +4,7 @@ import { BsThreeDots } from "react-icons/bs";
 import api_service from "api/api_service";
 import { Dialog, Transition } from "@headlessui/react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { Edit, Image, Trash } from "iconsax-react";
+import { Document, Edit, Image, Trash } from "iconsax-react";
 import { useForm } from "react-hook-form";
 import InputField from "components/fields/InputField";
 import * as yup from "yup";
@@ -86,14 +86,14 @@ function CardMenu({ transparent, slug, getData, title, id }) {
             </button>
             <button
               onClick={() => {
-                navigate(`galeri/${slug}${id}`);
+                navigate(`lesson/${id}`);
               }}
               className="mt-2 flex cursor-pointer items-center gap-2 rounded-md px-3 py-1 pt-1 text-gray-700 hover:bg-gray-200"
             >
               <span>
-                <Image size={18} />
+                <Document size={18} />
               </span>
-              Galeri
+              Detail
             </button>
           </div>
         }

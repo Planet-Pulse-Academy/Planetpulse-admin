@@ -3,7 +3,7 @@ import DevelopmentTable from "./components/ComponentTable";
 import { columnsDataDevelopment } from "./variables/columnsData";
 import api_service from "api/api_service";
 
-export default function Questions() {
+export default function Transaction() {
   const [data, setData] = React.useState({
     loading: false,
     error: false,
@@ -12,7 +12,7 @@ export default function Questions() {
   const getData = async () => {
     try {
       setData({ ...data, loading: true });
-      const res = await api_service.get("/lesson/category");
+      const res = await api_service.get("/admin/stagges");
       setData({ ...data, data: res.data, loading: false });
     } catch (error) {
       setData({ ...data, error: true, loading: false });

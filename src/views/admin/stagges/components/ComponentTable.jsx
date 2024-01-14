@@ -50,7 +50,7 @@ const DevelopmentTable = ({ header, data }) => {
     <Card extra={"w-full h-full p-4"}>
       <div className="relative flex items-center justify-between">
         <div className="text-xl font-bold text-navy-700 dark:text-white">
-          Category List
+          Stage List
         </div>
         <div className="flex lg:space-x-5">
           <div className="flex h-full items-center rounded-full bg-lightPrimary py-3 text-navy-700 dark:bg-navy-900 dark:text-white xl:w-[225px]">
@@ -96,7 +96,7 @@ const DevelopmentTable = ({ header, data }) => {
                 <tr key={i}>
                   <td>
                     <p className="my-3 mr-5 text-sm font-bold text-navy-700 dark:text-white">
-                      {i + 1}
+                      {data._id}
                     </p>
                   </td>
                   <td>
@@ -104,15 +104,21 @@ const DevelopmentTable = ({ header, data }) => {
                       {data.name}
                     </p>
                   </td>
-
                   <td>
                     <p className="my-3 mr-5 text-sm font-bold text-navy-700 dark:text-white">
-                      {data.description}
+                      {data.difficulty == 0
+                        ? "Easy"
+                        : data.difficulty == 1
+                        ? "Medium"
+                        : "Hard"}
                     </p>
                   </td>
                   <td>
+                    <p className="my-3 mr-5 text-sm font-bold text-navy-700 dark:text-white">{data.quizzes.length}</p>
+                  </td>
+                  <td>
                     <p className="my-3 mr-5 text-sm font-bold text-navy-700 dark:text-white">
-                      {data.createdAt}
+                    {new Date(data.createdAt).toLocaleDateString('en-US')}
                     </p>
                   </td>
                 </tr>

@@ -2,8 +2,8 @@ import axios from "axios";
 
 class ApiService {
   constructor() {
-    // this.baseUrl = "http://localhost:9000/api";
-    this.baseUrl = "https://us-central1-planetpulse-b2400.cloudfunctions.net/api";
+    this.baseUrl = "http://localhost:9000/api";
+    // this.baseUrl = "https://us-central1-planetpulse-b2400.cloudfunctions.net/api";
     this.headers = { authorization: `Bearer ${localStorage.getItem("token")}` };
   }
   login(data) {
