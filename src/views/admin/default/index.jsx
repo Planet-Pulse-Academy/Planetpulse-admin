@@ -21,16 +21,16 @@ const Dashboard = () => {
   }
   async function getTotalBerita() {
     try {
-      const res = await api_service.get("/berita/total");
-      setTotalBerita(res.data);
+      const res = await api_service.get("/lesson");
+      setTotalBerita(res.data.length);
     } catch (er) {
       console.log(er);
     }
   }
   async function getTotalDesa() {
     try {
-      const res = await api_service.get("/desa/total");
-      setTotalDesa(res.data);
+      const res = await api_service.get("/lesson/question");
+      setTotalDesa(res.data.length);
     } catch (er) {
       console.log(er);
     }
@@ -65,8 +65,8 @@ const Dashboard = () => {
           subtitle={totalBerita}
         />
         <Widget
-          icon={<House size="27" variant="Bulk" />}
-          title={"Sending"}
+          icon={<Document size="27" variant="Bulk" />}
+          title={"Question"}
           subtitle={totalDesa}
         />
         <Widget

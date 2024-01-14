@@ -16,7 +16,7 @@ import Users from "views/admin/users";
 const App = () => {
   const authme = async () => {
     try {
-      const res = await api_service.get("/auth/authme");
+      const res = await api_service.get("/admin/auth");
       localStorage.setItem("token", res.token);
     } catch (er) {
       console.log(er);

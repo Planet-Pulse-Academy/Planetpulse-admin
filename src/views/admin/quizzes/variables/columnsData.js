@@ -1,1 +1,1 @@
-export const columnsDataDevelopment = ["TRANSACTIONS ID", "TANGGAL", "PRODUK", "METODE PEMBAYARAN", "STATUS"];
+export const columnsDataDevelopment = ["QUIZZ ID", "TITLE", "ID STAGES", "QUESTION", "CREATED AT", "ACTION"];

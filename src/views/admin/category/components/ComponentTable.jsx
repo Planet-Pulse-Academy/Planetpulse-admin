@@ -50,7 +50,7 @@ const DevelopmentTable = ({ header, data }) => {
     <Card extra={"w-full h-full p-4"}>
       <div className="relative flex items-center justify-between">
         <div className="text-xl font-bold text-navy-700 dark:text-white">
-          Product List
+          Question List
         </div>
         <div className="flex lg:space-x-5">
           <div className="flex h-full items-center rounded-full bg-lightPrimary py-3 text-navy-700 dark:bg-navy-900 dark:text-white xl:w-[225px]">
@@ -96,57 +96,30 @@ const DevelopmentTable = ({ header, data }) => {
                 <tr key={i}>
                   <td>
                     <p className="my-3 mr-5 text-sm font-bold text-navy-700 dark:text-white">
-                      {data.products_id}
+                      {i + 1}
                     </p>
                   </td>
                   <td>
                     <p className="my-3 mr-5 text-sm font-bold text-navy-700 dark:text-white">
-                      {data.title}
+                      {data.text}
+                    </p>
+                  </td>
+                  {data.options?.map((data, i) => (
+                    <td>
+                      <p className="my-3 mr-5 text-sm font-bold text-navy-700 dark:text-white">
+                        {data}
+                      </p>
+                    </td>
+                  ))}
+                  <td>
+                    <p className="my-3 mr-5 text-sm font-bold text-navy-700 dark:text-white">
+                     Answer : {data.correctOptionIndex + 1}
                     </p>
                   </td>
                   <td>
                     <p className="my-3 mr-5 text-sm font-bold text-navy-700 dark:text-white">
-                      {data.desc}
+                      {data.createdAt}
                     </p>
-                  </td>
-                  <td>
-                    <p className="my-3 mr-5 text-sm font-bold text-navy-700 dark:text-white">
-                      Rp. {data.price}
-                    </p>
-                  </td>
-                  <td>
-                    <p className="my-3 mr-5 text-sm font-bold text-navy-700 dark:text-white">
-                      {data.category}
-                    </p>
-                  </td>
-                  <td className="flex items-center">
-                    <button
-                      onClick={() => {
-                        setSelectedLayanan(data);
-                        openModalEdit();
-                      }}
-                      className="rounded-md bg-blue-500 px-4 py-1.5 text-sm text-white hover:bg-blue-600 md:mr-4 lg:mr-3"
-                    >
-                      Detail
-                    </button>
-                    <button
-                      onClick={() => {
-                        setSelectedLayanan(data);
-                        openModalEdit();
-                      }}
-                      className="rounded-md bg-blue-500 px-4 py-1.5 hover:bg-blue-600 md:mr-4 lg:mr-3"
-                    >
-                      <Edit className="h-4 w-4 text-white" />
-                    </button>
-                    <button
-                      onClick={() => {
-                        setSelectedLayanan(data);
-                        openModalDelete();
-                      }}
-                      className="rounded-md bg-red-500 px-4 py-1.5 hover:bg-red-600 md:mr-4 lg:mr-3"
-                    >
-                      <Trash className="h-4 w-4 text-white" />
-                    </button>
                   </td>
                 </tr>
               ))}

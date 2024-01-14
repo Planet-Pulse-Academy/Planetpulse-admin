@@ -17,37 +17,20 @@ const Account = () => {
   const [data, setData] = useState({
     loading: false,
     error: false,
-    data: [
-      {
-        id: "122192122",
-        username: "rofl1st",
-        name: "Danen",
-        no_telephone: "008880050505",
-        status: "Verified",
-      },
-      {
-        id: "122192122",
-        username: "rofl1st",
-        name: "Danen",
-        no_telephone: "080205005",
-        status: "Verified",
-      },
-      {
-        id: "122192122",
-        username: "rofl1st",
-        name: "Danen",
-        no_telephone: "080205005",
-        status: "Verified",
-      },
-      {
-        id: "122192122",
-        username: "rofl1st",
-        name: "Danen",
-        no_telephone: "080205005",
-        status: "Verified",
-      },
-    ],
+    data: [],
   });
+
+  const getData = async () => {
+    try {
+      setData({ ...data, loading: true });
+      const res = await api_service.get("/admin/user");
+      setData({ ...data, data: res.data });
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+      setData({ ...data, error: true });
+    }
+  };
   const months = [
     "Januari",
     "Februari",
@@ -71,6 +54,9 @@ const Account = () => {
     setIsOpenCreate(true);
   }
 
+  useEffect(() => {
+    getData();
+  }, []);
   return (
     <div className="mt-3">
       {data.loading ? (
@@ -92,7 +78,7 @@ const Account = () => {
                 slug={data.slug}
                 username={data.username}
                 name={data.name}
-                image={data.image}
+                image={data.photo_profile}
                 alt={data.nama_album}
                 price={data.price}
                 created={`${date.getDate()} ${
