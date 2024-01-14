@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 
 const schema = yup.object({ nama_album: yup.string().required() }).required();
 
-function CardMenu({ transparent, slug, getData, title, id }) {
+function CardMenu({ transparent, getData, title, id }) {
   const [openMenu, setOpenMenu] = useState(false);
   const [isOpenDelete, setIsOpenDelete] = useState(false);
   const [isOpenEdit, setIsOpenEdit] = useState(false);
@@ -37,7 +37,7 @@ function CardMenu({ transparent, slug, getData, title, id }) {
         closeModal={closeModalEdit}
         getData={getData}
         isOpen={isOpenEdit}
-        slug={slug}
+        id={id}
         title={title}
       />
       <ModalDelete
@@ -45,7 +45,7 @@ function CardMenu({ transparent, slug, getData, title, id }) {
         getData={getData}
         isOpen={isOpenDelete}
         setIsOpen={setIsOpenDelete}
-        slug={slug}
+        id={id}
         title={title}
       />
       <Dropdown
@@ -84,17 +84,6 @@ function CardMenu({ transparent, slug, getData, title, id }) {
               </span>
               Delete
             </button>
-            <button
-              onClick={() => {
-                navigate(`lesson/${id}`);
-              }}
-              className="mt-2 flex cursor-pointer items-center gap-2 rounded-md px-3 py-1 pt-1 text-gray-700 hover:bg-gray-200"
-            >
-              <span>
-                <Document size={18} />
-              </span>
-              Detail
-            </button>
           </div>
         }
       />
@@ -104,7 +93,7 @@ function CardMenu({ transparent, slug, getData, title, id }) {
 
 export default CardMenu;
 
-function ModalUpdate({ getData, slug, isOpen, closeModal, title }) {
+function ModalUpdate({ getData, id, isOpen, closeModal, title }) {
   const [isLoading, setIsLoading] = useState(false);
   const {
     register,
@@ -115,7 +104,7 @@ function ModalUpdate({ getData, slug, isOpen, closeModal, title }) {
   async function onSubmit(data) {
     try {
       setIsLoading(true);
-      await api_service.put(`/album/edit/${slug}`, data);
+      await api_service.put(`/album/edit/${id}`, data);
       setIsLoading(false);
       getData();
     } catch (er) {
@@ -199,12 +188,12 @@ function ModalUpdate({ getData, slug, isOpen, closeModal, title }) {
   );
 }
 
-function ModalDelete({ getData, slug, setIsOpen, isOpen, closeModal, title }) {
+function ModalDelete({ getData, id, setIsOpen, isOpen, closeModal, title }) {
   const [isLoading, setIsLoading] = useState(false);
   const deleteAlbum = async () => {
     try {
       setIsLoading(true);
-      await api_service.delete(`/album/delete/${slug}`);
+      await api_service.delete(`/lesson/delete/${id}`);
       getData();
       setIsLoading(false);
       setIsOpen(false);

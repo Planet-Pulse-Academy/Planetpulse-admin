@@ -13,15 +13,15 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import Alert from "components/alert";
 import empty from "assets/json/empty.json";
 import Lottie from "react-lottie";
-
+import { format } from "date-fns";
+import OptionField from "components/fields/OptionField";
 const schema = yup
   .object({
-    nama: yup.string().required(),
-    syarat: yup.string().required(),
+    title: yup.string().required(),
   })
   .required();
 
-const DevelopmentTable = ({ header, data }) => {
+const DevelopmentTable = ({ header, data, getData }) => {
   const [isOpenDelete, setIsOpenDelete] = useState(false);
   const [isOpenCreate, setIsOpenCreate] = useState(false);
   const [isOpenEdit, setIsOpenEdit] = useState(false);
@@ -48,6 +48,23 @@ const DevelopmentTable = ({ header, data }) => {
   }
   return (
     <Card extra={"w-full h-full p-4"}>
+      <ModalEdit
+        closeModal={closeModalEdit}
+        isOpen={isOpenEdit}
+        getData={getData}
+        selectedLayanan={selectedLayanan}
+      />
+      <ModalCreate
+        closeModal={closeModalCreate}
+        isOpen={isOpenCreate}
+        getData={getData}
+      />
+      <ModalDelete
+        getData={getData}
+        closeModal={closeModalDelete}
+        isOpen={isOpenDelete}
+        selectedLayanan={selectedLayanan}
+      />
       <div className="relative flex items-center justify-between">
         <div className="text-xl font-bold text-navy-700 dark:text-white">
           Stage List
@@ -58,6 +75,26 @@ const DevelopmentTable = ({ header, data }) => {
               <FiSearch className="h-4 w-4 text-gray-400 dark:text-white" />
             </p>
             <input
+              type="text"
+              placeholder="Search..."
+              className="block h-full w-full rounded-full bg-lightPrimary text-sm font-medium text-navy-700 outline-none placeholder:!text-gray-400 dark:bg-navy-900 dark:text-white dark:placeholder:!text-white sm:w-fit"
+            />
+          </div>
+        </div>
+        <div className="flex lg:space-x-5">
+          <button
+            onClick={openModalCreate}
+            className="flex items-center space-x-1 rounded-full bg-brand-700 px-4 py-2 text-white drop-shadow-md hover:bg-white hover:text-brand-700 dark:bg-brand-400 dark:hover:bg-white dark:hover:text-brand-400"
+          >
+            <Add />
+            <p>Create</p>
+          </button>
+          <div className="flex h-full items-center rounded-full bg-lightPrimary py-3 text-navy-700 dark:bg-navy-900 dark:text-white xl:w-[225px]">
+            <p className="pl-3 pr-2 text-xl">
+              <FiSearch className="h-4 w-4 text-gray-400 dark:text-white" />
+            </p>
+            <input
+              onChange={(e) => getData(e.target.value)}
               type="text"
               placeholder="Search..."
               className="block h-full w-full rounded-full bg-lightPrimary text-sm font-medium text-navy-700 outline-none placeholder:!text-gray-400 dark:bg-navy-900 dark:text-white dark:placeholder:!text-white sm:w-fit"
@@ -106,20 +143,42 @@ const DevelopmentTable = ({ header, data }) => {
                   </td>
                   <td>
                     <p className="my-3 mr-5 text-sm font-bold text-navy-700 dark:text-white">
-                      {data.difficulty == 0
+                      {data.difficulty == 1
                         ? "Easy"
-                        : data.difficulty == 1
+                        : data.difficulty == 2
                         ? "Medium"
                         : "Hard"}
                     </p>
                   </td>
                   <td>
-                    <p className="my-3 mr-5 text-sm font-bold text-navy-700 dark:text-white">{data.quizzes.length}</p>
+                    <p className="my-3 mr-5 text-sm font-bold text-navy-700 dark:text-white">
+                      {data.quizzes.length}
+                    </p>
                   </td>
                   <td>
                     <p className="my-3 mr-5 text-sm font-bold text-navy-700 dark:text-white">
-                    {new Date(data.createdAt).toLocaleDateString('en-US')}
+                      {format(new Date(data.createdAt), "MMMM dd, yyyy")}
                     </p>
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => {
+                        setSelectedLayanan(data);
+                        openModalDelete();
+                      }}
+                      className="rounded-md bg-red-500 px-4 py-1.5 hover:bg-red-600 md:mr-4 lg:mr-3"
+                    >
+                      <Trash className="h-4 w-4 text-white" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedLayanan(data);
+                        openModalEdit();
+                      }}
+                      className="rounded-md bg-blue-500 px-4 py-1.5 hover:bg-blue-600"
+                    >
+                      <Edit className="h-4 w-4 text-white" />
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -148,6 +207,7 @@ const DevelopmentTable = ({ header, data }) => {
 export default DevelopmentTable;
 
 function ModalEdit({ isOpen, closeModal, getData, selectedLayanan }) {
+  console.log(selectedLayanan);
   const {
     register,
     handleSubmit,
@@ -156,58 +216,59 @@ function ModalEdit({ isOpen, closeModal, getData, selectedLayanan }) {
   } = useForm({ resolver: yupResolver(schema) });
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
-  const [errorDocument, setErrorDocument] = useState(null);
-  const [documentData, setDocumentData] = useState(null);
+  const [lesson, setLesson] = useState("");
+  const [difficulty, setDifficulty] = useState("");
 
-  function getDocument(e) {
-    if (e.target.files && e.target.files[0]) {
-      if (
-        e.target.files[0].type ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-      ) {
-        setDocumentData(e.target.files[0]);
-      } else {
-        setErrorDocument("Hanya file ber-ekstensi .docx");
-      }
-    }
-  }
-
-  async function onSubmit(data) {
+   async function onSubmit(data) {
     try {
+      console.log(data);
       setIsLoading(true);
-      const formdata = new FormData();
-      formdata.append("nama", data.nama);
-      formdata.append("syarat", data.syarat);
-      formdata.append(
-        "template",
-        typeof documentData === "string" ? documentData.name : documentData
-      );
-      await api_service.putWithDocument(
-        `/layanan/edit/${selectedLayanan?.slug}`,
-        formdata
-      );
+      const formData = {
+        name: data.title,
+        id_lesson: lesson,
+        difficulty: difficulty,
+      };
+      await api_service.put(`/lesson/stages/update/${selectedLayanan?._id}`, formData);
       setIsLoading(false);
       getData();
       closeModal();
-      reset();
     } catch (er) {
       setErrorMessage(er);
       setIsLoading(false);
       console.log(er);
     }
   }
-  useEffect(() => {
-    reset();
-    if (isOpen) {
-      setDocumentData(
-        selectedLayanan?.template
-          ?.substring(85, selectedLayanan?.template?.length)
-          ?.replaceAll("%20", " ")
-      );
-    } else {
-      setDocumentData(null);
+ 
+
+
+  const [lessonData, setLessonData] = useState({
+    loading: false,
+    error: false,
+    data: [],
+  });
+  const getLesson = async () => {
+    try {
+      setLessonData({ ...lessonData, loading: true });
+      const res = await api_service.get("/lesson");
+      setLessonData({ ...lessonData, data: res.data, loading: false });
+    } catch (error) {
+      console.log(error);
+      setLessonData({ ...lessonData, error: true });
     }
-  }, [isOpen, reset, selectedLayanan?.template]);
+  };
+
+  useEffect(() => {
+    getLesson();
+  }, []);
+
+  function handleChange(e) {
+    setLesson(e.target.value);
+    console.log(lesson);
+  }
+  function handleChange2(e) {
+    setDifficulty(e.target.value);
+    console.log(e.target.value);
+  }
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-[99]" onClose={closeModal}>
@@ -235,62 +296,49 @@ function ModalEdit({ isOpen, closeModal, getData, selectedLayanan }) {
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                {errorDocument && <Alert message={errorDocument} />}
                 {errorMessage && <Alert message={errorMessage} />}
                 <Dialog.Title
                   as="h3"
                   className="mb-5 text-lg font-bold leading-6 text-gray-900"
                 >
-                  Edit Layanan
+                  Create Stage
                 </Dialog.Title>
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <InputField
-                    label="Nama Layanan"
+                    label="Nama Stage"
                     register={register}
-                    name="nama"
+                    name="title"
                     extra="mb-1"
-                    value={selectedLayanan?.nama}
+                    value={selectedLayanan?.name}
                   />
-                  {errors?.nama && (
+                  {errors?.title && (
                     <p className="text-sm italic text-red-500">
-                      Nama layanan tidak boleh kosong
+                      Nama Stage tidak boleh kosong
                     </p>
                   )}
-                  <InputField
-                    label="Syarat"
-                    register={register}
-                    name="syarat"
-                    extra="mb-1"
-                    value={selectedLayanan?.syarat}
+                  <OptionField
+                    handleChange={handleChange}
+                    data={lessonData.data}
+                    name={"id_lesson"}
+                    placeholder={"Pilih Lesson"}
+                    loading={lessonData.loading}
+                    label={"Pilih Lesson"}
+                    value={selectedLayanan?.id_lesson}
                   />
-                  <p className="text-xs italic text-gray-500">
-                    Gunakan tanda koma (,) sebagai pemisah, ex: fotokopi ktp,
-                    fotokopi kk, dll
-                  </p>
-                  {errors?.syarat && (
-                    <p className="text-sm italic text-red-500">
-                      Syarat tidak boleh kosong
-                    </p>
-                  )}
-                  <button
-                    type="button"
-                    className="relative mt-5 flex h-32 w-full items-center justify-center rounded-lg border-2 border-dashed border-blue-300 bg-blue-50"
-                  >
-                    <input
-                      accept=".docx"
-                      onChange={getDocument}
-                      type="file"
-                      className="absolute z-10 mt-3 h-full w-full cursor-pointer opacity-0 "
-                    />
-                    <p
-                      className={`text-blue-500 ${documentData && "font-bold"}`}
-                    >
-                      {typeof documentData === "string"
-                        ? documentData
-                        : documentData?.name}
-                    </p>
-                  </button>
-                  <div className="mt-4 flex items-center">
+                  <OptionField
+                    handleChange={handleChange2}
+                    data={[
+                      { _id: 1, title: "Easy" },
+                      { _id: 2, title: "Medium" },
+                      { _id: 3, title: "Hard" },
+                    ]}
+                    name={"difficulty"}
+                    placeholder={"Pilih Kesusahan"}
+                    loading={false}
+                    label={"Pilih Kesusahan"}
+                    value={selectedLayanan?.difficulty}
+                  />
+                  <div className="mt-10 flex items-center">
                     <button
                       type="button"
                       className="border-transparent mr-5 justify-center rounded-md border bg-red-500 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
@@ -324,52 +372,66 @@ function ModalCreate({ isOpen, closeModal, getData }) {
   } = useForm({ resolver: yupResolver(schema) });
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
-  const [errorDocument, setErrorDocument] = useState(null);
-  const [documentData, setDocumentData] = useState(null);
-  const [disable, setDisable] = useState(true);
 
-  function getDocument(e) {
-    if (e.target.files && e.target.files[0]) {
-      if (
-        e.target.files[0].type ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-      ) {
-        setDocumentData(e.target.files[0]);
-      } else {
-        setErrorDocument("Hanya file ber-ekstensi .docx");
-      }
-    }
-  }
+  const [disable, setDisable] = useState(true);
+  const [lesson, setLesson] = useState("");
+  const [difficulty, setDifficulty] = useState("");
 
   async function onSubmit(data) {
     try {
+      console.log(data);
       setIsLoading(true);
-      const formdata = new FormData();
-      formdata.append("nama", data.nama);
-      formdata.append("syarat", data.syarat);
-      formdata.append("template", documentData);
-      await api_service.postWithDocument("/layanan/create", formdata);
+      const formData = {
+        name: data.title,
+        id_lesson: lesson,
+        difficulty: difficulty,
+      };
+      await api_service.post("/lesson/stages/post", formData);
       setIsLoading(false);
       getData();
       closeModal();
-      reset();
     } catch (er) {
       setErrorMessage(er);
       setIsLoading(false);
       console.log(er);
     }
   }
+
   useEffect(() => {
-    if (!documentData) {
+    if (!lesson) {
       setDisable(true);
     } else {
       setDisable(false);
     }
-  }, [documentData]);
+  }, [lesson]);
+  const [lessonData, setLessonData] = useState({
+    loading: false,
+    error: false,
+    data: [],
+  });
+  const getLesson = async () => {
+    try {
+      setLessonData({ ...lessonData, loading: true });
+      const res = await api_service.get("/lesson");
+      setLessonData({ ...lessonData, data: res.data, loading: false });
+    } catch (error) {
+      console.log(error);
+      setLessonData({ ...lessonData, error: true });
+    }
+  };
+
   useEffect(() => {
-    reset();
-    setDocumentData(null);
-  }, [isOpen, reset]);
+    getLesson();
+  }, []);
+
+  function handleChange(e) {
+    setLesson(e.target.value);
+    console.log(lesson);
+  }
+  function handleChange2(e) {
+    setDifficulty(e.target.value);
+    console.log(e.target.value);
+  }
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-[99]" onClose={closeModal}>
@@ -397,60 +459,48 @@ function ModalCreate({ isOpen, closeModal, getData }) {
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                {errorDocument && <Alert message={errorDocument} />}
                 {errorMessage && <Alert message={errorMessage} />}
                 <Dialog.Title
                   as="h3"
                   className="mb-5 text-lg font-bold leading-6 text-gray-900"
                 >
-                  Create Layanan
+                  Create Stage
                 </Dialog.Title>
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <InputField
-                    label="Nama Layanan"
+                    label="Nama Stage"
                     register={register}
-                    name="nama"
+                    name="title"
                     extra="mb-1"
                   />
-                  {errors?.nama && (
+                  {errors?.title && (
                     <p className="text-sm italic text-red-500">
-                      Nama layanan tidak boleh kosong
+                      Nama Stage tidak boleh kosong
                     </p>
                   )}
-                  <InputField
-                    label="Syarat"
-                    register={register}
-                    name="syarat"
-                    extra="mb-1"
+                  <OptionField
+                    handleChange={handleChange}
+                    data={lessonData.data}
+                    name={"id_lesson"}
+                    placeholder={"Pilih Lesson"}
+                    loading={lessonData.loading}
+                    label={"Pilih Lesson"}
+                    value={lesson}
                   />
-                  <p className="text-xs italic text-gray-500">
-                    Gunakan tanda koma (,) sebagai pemisah, ex: fotokopi ktp,
-                    fotokopi kk, dll
-                  </p>
-                  {errors?.syarat && (
-                    <p className="text-sm italic text-red-500">
-                      Syarat tidak boleh kosong
-                    </p>
-                  )}
-                  <button
-                    type="button"
-                    className="relative mt-5 flex h-32 w-full items-center justify-center rounded-lg border-2 border-dashed border-blue-300 bg-blue-50"
-                  >
-                    <input
-                      accept=".docx"
-                      onChange={getDocument}
-                      type="file"
-                      className="absolute z-10 mt-3 h-full w-full cursor-pointer opacity-0 "
-                    />
-                    <p
-                      className={`text-blue-500 ${documentData && "font-bold"}`}
-                    >
-                      {!documentData
-                        ? "Upload Template Surat"
-                        : documentData?.name}
-                    </p>
-                  </button>
-                  <div className="mt-4 flex items-center">
+                  <OptionField
+                    handleChange={handleChange2}
+                    data={[
+                      { _id: 1, title: "Easy" },
+                      { _id: 2, title: "Medium" },
+                      { _id: 3, title: "Hard" },
+                    ]}
+                    name={"difficulty"}
+                    placeholder={"Pilih Kesusahan"}
+                    loading={false}
+                    label={"Pilih Kesusahan"}
+                    value={difficulty}
+                  />
+                  <div className="mt-10 flex items-center">
                     <button
                       type="button"
                       className="border-transparent mr-5 justify-center rounded-md border bg-red-500 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
@@ -485,10 +535,10 @@ function ModalCreate({ isOpen, closeModal, getData }) {
 function ModalDelete({ isOpen, closeModal, selectedLayanan, getData }) {
   const [isLoading, setIsLoading] = useState(false);
 
-  async function deleteDesa(slug) {
+  async function deleteDesa(id) {
     try {
       setIsLoading(true);
-      await api_service.delete(`/layanan/delete/${slug}`);
+      await api_service.delete(`/lesson/stages/delete/${id}`);
       getData();
       setIsLoading(false);
       closeModal();
@@ -530,7 +580,7 @@ function ModalDelete({ isOpen, closeModal, selectedLayanan, getData }) {
                 >
                   Apakah anda yakin ingin menghapus{" "}
                   <span className="font-black">
-                    ' {selectedLayanan?.nama} '
+                    ' {selectedLayanan?.name} '
                   </span>
                 </Dialog.Title>
                 <div className="mt-4 flex items-center">
@@ -542,7 +592,7 @@ function ModalDelete({ isOpen, closeModal, selectedLayanan, getData }) {
                     Tidak
                   </button>
                   <button
-                    onClick={() => deleteDesa(selectedLayanan?.slug)}
+                    onClick={() => deleteDesa(selectedLayanan?._id)}
                     type="button"
                     className="border-transparent flex justify-center rounded-md border bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                   >

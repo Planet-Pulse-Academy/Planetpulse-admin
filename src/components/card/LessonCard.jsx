@@ -8,10 +8,10 @@ const LessonCard = ({
   extra,
   alt,
   id,
-  slug,
+  
   getData,
   category,
-  price,
+  created,
 }) => {
   return (
     <>
@@ -21,7 +21,7 @@ const LessonCard = ({
         >
           <div className="h-full w-full">
             <div className="mb-4 flex justify-end">
-              <CardMenu slug={slug} getData={getData} title={name} id={id} />
+              <CardMenu getData={getData} title={name} id={id} />
             </div>
             <div className="relative w-full">
               <img
@@ -43,6 +43,11 @@ const LessonCard = ({
               {category.length > 0
                 ? category.map((i) => i.name).join(", ")
                 : "No categories"}
+            </p>
+            <p className="w-72 overflow-hidden text-ellipsis whitespace-nowrap text-left text-sm font-medium text-navy-700 dark:text-white lg:w-52 ">
+              {" "}
+              Created At : {created}
+             
             </p>
           </div>
         </Card>

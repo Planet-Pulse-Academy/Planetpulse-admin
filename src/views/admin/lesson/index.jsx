@@ -11,10 +11,14 @@ import Lottie from "react-lottie";
 import * as yup from "yup";
 import empty from "assets/json/empty";
 import LessonCard from "components/card/LessonCard";
+import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 const schema = yup.object({ nama_album: yup.string().required() }).required();
 
 const Lesson = () => {
+  const navigate = useNavigate();
+
   const [data, setData] = useState({
     loading: false,
     error: false,
@@ -60,6 +64,18 @@ const Lesson = () => {
   }, []);
   return (
     <div className="mt-3">
+      
+       <div className="mb-7 flex justify-end space-x-7">
+        <button
+          onClick={() => {
+            navigate("/admin/lesson/create")
+          }}
+          className="flex items-center space-x-1 rounded-full bg-brand-700 px-4 py-2 text-white drop-shadow-md hover:bg-white hover:text-brand-700 dark:bg-brand-400 dark:hover:bg-white dark:hover:text-brand-400"
+        >
+          <Add />
+          <p>Create</p>
+        </button>
+      </div>
       {data.loading ? (
         <div className="flex h-96 w-full items-center justify-center">
           <AiOutlineLoading3Quarters className="animate-spin text-5xl text-blueSecondary" />
@@ -71,7 +87,6 @@ const Lesson = () => {
       ) : (
         <div className="grid h-full grid-cols-1 gap-5 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
           {data.data?.map((data, i) => {
-            const date = new Date(data.createdAt);
             return (
               <LessonCard
                 key={i}
@@ -79,9 +94,8 @@ const Lesson = () => {
                 name={data.title}
                 image={data.photo_url}
                 category={data.categories}
-                created={`${date.getDate()} ${
-                  months[date.getMonth()]
-                } ${date.getFullYear()}`}
+                getData={getData}
+                created={format(new Date(data.createdAt), 'MMMM dd, yyyy')}
               />
             );
           })}

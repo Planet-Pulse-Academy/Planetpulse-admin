@@ -13,6 +13,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import Alert from "components/alert";
 import empty from "assets/json/empty.json";
 import Lottie from "react-lottie";
+import { format } from "date-fns";
 
 const schema = yup
   .object({
@@ -116,7 +117,7 @@ const DevelopmentTable = ({ header, data }) => {
                   </td>
                   <td>
                     <p className="my-3 mr-5 text-sm font-bold text-navy-700 dark:text-white">
-                      {data.createdAt}
+                      {format(new Date(data.createdAt), "MMMM dd, yyyy")}
                     </p>
                   </td>
                 </tr>

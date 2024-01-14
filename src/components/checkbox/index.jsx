@@ -1,5 +1,5 @@
 const Checkbox = (props) => {
-  const { extra, color, ...rest } = props;
+  const { extra, color, checked, onChange, ...rest } = props;
   return (
     <input
       type="checkbox"
@@ -37,6 +37,8 @@ const Checkbox = (props) => {
           : "checked:bg-brand-500 dark:checked:bg-brand-400"
       } ${extra}`}
       name="weekly"
+      checked={checked}
+      onChange={onChange}
       {...rest}
     />
   );

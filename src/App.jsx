@@ -13,6 +13,7 @@ import Quizzes from "views/admin/quizzes";
 import Questions from "views/admin/questions";
 import Category from "views/admin/category";
 import Users from "views/admin/users";
+import CreateLesson from "views/admin/lesson/create";
 
 const App = () => {
   const authme = async () => {
@@ -55,7 +56,20 @@ const App = () => {
             />
           }
         />
-         <Route
+        <Route
+          path="/admin/lesson/create"
+          element={
+            <ProtectRoute
+              children={
+                <AdminLayout
+                  current="Lesson / Create"
+                  children={<CreateLesson />}
+                />
+              }
+            />
+          }
+        />
+        <Route
           path="stagges"
           element={
             <ProtectRoute
@@ -65,7 +79,7 @@ const App = () => {
             />
           }
         />
-         <Route
+        <Route
           path="quizzes"
           element={
             <ProtectRoute
@@ -75,7 +89,7 @@ const App = () => {
             />
           }
         />
-         <Route
+        <Route
           path="questions"
           element={
             <ProtectRoute
@@ -83,10 +97,9 @@ const App = () => {
                 <AdminLayout current="Questions" children={<Questions />} />
               }
             />
-            
           }
         />
-         <Route
+        <Route
           path="category"
           element={
             <ProtectRoute
@@ -94,18 +107,14 @@ const App = () => {
                 <AdminLayout current="Category" children={<Category />} />
               }
             />
-            
           }
         />
-         <Route
+        <Route
           path="users"
           element={
             <ProtectRoute
-              children={
-                <AdminLayout current="Users" children={<Users />} />
-              }
+              children={<AdminLayout current="Users" children={<Users />} />}
             />
-            
           }
         />
       </Route>
