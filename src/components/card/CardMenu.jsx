@@ -67,7 +67,7 @@ function CardMenu({ transparent, getData, title, id }) {
         children={
           <div className="z-50 w-max rounded-xl bg-white py-3 px-4 text-sm drop-shadow-lg dark:!bg-navy-700 dark:shadow-none">
             <button
-              onClick={openModalEdit}
+              onClick={() => navigate(`/admin/lesson/edit/${id}`)}
               className="flex cursor-pointer items-center gap-2  rounded-md px-3 py-1 text-gray-700 hover:bg-gray-200"
             >
               <span>

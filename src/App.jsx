@@ -14,6 +14,7 @@ import Questions from "views/admin/questions";
 import Category from "views/admin/category";
 import Users from "views/admin/users";
 import CreateLesson from "views/admin/lesson/create";
+import EditLesson from "views/admin/lesson/edit";
 
 const App = () => {
   const authme = async () => {
@@ -64,6 +65,19 @@ const App = () => {
                 <AdminLayout
                   current="Lesson / Create"
                   children={<CreateLesson />}
+                />
+              }
+            />
+          }
+        />
+        <Route
+          path="/admin/lesson/edit/:id"
+          element={
+            <ProtectRoute
+              children={
+                <AdminLayout
+                  current="Lesson / Edit"
+                  children={<EditLesson />}
                 />
               }
             />
