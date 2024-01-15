@@ -12,7 +12,7 @@ export default function Questions() {
   const getData = async () => {
     try {
       setData({ ...data, loading: true });
-      const res = await api_service.get("/lesson/question");
+      const res = await api_service.get("/admin/question");
       setData({ ...data, data: res.data, loading: false });
     } catch (error) {
       setData({ ...data, error: true, loading: false });
