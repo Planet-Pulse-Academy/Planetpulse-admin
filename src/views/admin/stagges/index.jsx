@@ -9,10 +9,10 @@ export default function Transaction() {
     error: false,
     data: [],
   });
-  const getData = async () => {
+  const getData = async (key) => {
     try {
       setData({ ...data, loading: true });
-      const res = await api_service.get("/admin/stagges");
+      const res = await api_service.get(`/admin/stagges?${key !== undefined && `key=${key}`}`);
       setData({ ...data, data: res.data, loading: false });
     } catch (error) {
       setData({ ...data, error: true, loading: false });

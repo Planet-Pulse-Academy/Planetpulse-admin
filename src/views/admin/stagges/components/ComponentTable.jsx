@@ -1,5 +1,5 @@
 import Card from "components/card";
-import { Add, DocumentDownload, Edit, Trash } from "iconsax-react";
+import { Add, DocumentDownload, Edit, InfoCircle, Trash } from "iconsax-react";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
 import React from "react";
@@ -15,6 +15,10 @@ import empty from "assets/json/empty.json";
 import Lottie from "react-lottie";
 import { format } from "date-fns";
 import OptionField from "components/fields/OptionField";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import Loading from "components/Loading";
+
 const schema = yup
   .object({
     title: yup.string().required(),
@@ -25,6 +29,7 @@ const DevelopmentTable = ({ header, data, getData }) => {
   const [isOpenDelete, setIsOpenDelete] = useState(false);
   const [isOpenCreate, setIsOpenCreate] = useState(false);
   const [isOpenEdit, setIsOpenEdit] = useState(false);
+  const [isOpenContent, setIsOpenContent] = useState(false);
   const [selectedLayanan, setSelectedLayanan] = useState(null);
 
   function closeModalDelete() {
@@ -46,6 +51,13 @@ const DevelopmentTable = ({ header, data, getData }) => {
   function openModalEdit() {
     setIsOpenEdit(true);
   }
+
+  function closeModalContent() {
+    setIsOpenContent(false);
+  }
+  function openModalContent() {
+    setIsOpenContent(true);
+  }
   return (
     <Card extra={"w-full h-full p-4"}>
       <ModalEdit
@@ -59,6 +71,12 @@ const DevelopmentTable = ({ header, data, getData }) => {
         isOpen={isOpenCreate}
         getData={getData}
       />
+      <ModalContent
+        closeModal={closeModalContent}
+        isOpen={isOpenContent}
+        getData={getData}
+        selectedLayanan={selectedLayanan}
+      />
       <ModalDelete
         getData={getData}
         closeModal={closeModalDelete}
@@ -68,18 +86,6 @@ const DevelopmentTable = ({ header, data, getData }) => {
       <div className="relative flex items-center justify-between">
         <div className="text-xl font-bold text-navy-700 dark:text-white">
           Stage List
-        </div>
-        <div className="flex lg:space-x-5">
-          <div className="flex h-full items-center rounded-full bg-lightPrimary py-3 text-navy-700 dark:bg-navy-900 dark:text-white xl:w-[225px]">
-            <p className="pl-3 pr-2 text-xl">
-              <FiSearch className="h-4 w-4 text-gray-400 dark:text-white" />
-            </p>
-            <input
-              type="text"
-              placeholder="Search..."
-              className="block h-full w-full rounded-full bg-lightPrimary text-sm font-medium text-navy-700 outline-none placeholder:!text-gray-400 dark:bg-navy-900 dark:text-white dark:placeholder:!text-white sm:w-fit"
-            />
-          </div>
         </div>
         <div className="flex lg:space-x-5">
           <button
@@ -133,7 +139,7 @@ const DevelopmentTable = ({ header, data, getData }) => {
                 <tr key={i}>
                   <td>
                     <p className="my-3 mr-5 text-sm font-bold text-navy-700 dark:text-white">
-                      {data._id}
+                      {i + 1}
                     </p>
                   </td>
                   <td>
@@ -152,6 +158,11 @@ const DevelopmentTable = ({ header, data, getData }) => {
                   </td>
                   <td>
                     <p className="my-3 mr-5 text-sm font-bold text-navy-700 dark:text-white">
+                      {data.lesson_name}
+                    </p>
+                  </td>
+                  <td>
+                    <p className="my-3 mr-5 text-sm font-bold text-navy-700 dark:text-white">
                       {data.quizzes.length}
                     </p>
                   </td>
@@ -164,6 +175,15 @@ const DevelopmentTable = ({ header, data, getData }) => {
                     <button
                       onClick={() => {
                         setSelectedLayanan(data);
+                        openModalEdit();
+                      }}
+                      className="rounded-md bg-blue-500 px-4 py-1.5 hover:bg-blue-600 lg:mr-3"
+                    >
+                      <Edit className="h-4 w-4 text-white" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedLayanan(data);
                         openModalDelete();
                       }}
                       className="rounded-md bg-red-500 px-4 py-1.5 hover:bg-red-600 md:mr-4 lg:mr-3"
@@ -173,11 +193,11 @@ const DevelopmentTable = ({ header, data, getData }) => {
                     <button
                       onClick={() => {
                         setSelectedLayanan(data);
-                        openModalEdit();
+                        openModalContent();
                       }}
                       className="rounded-md bg-blue-500 px-4 py-1.5 hover:bg-blue-600"
                     >
-                      <Edit className="h-4 w-4 text-white" />
+                      <InfoCircle className="h-4 w-4 text-white" />
                     </button>
                   </td>
                 </tr>
@@ -207,7 +227,6 @@ const DevelopmentTable = ({ header, data, getData }) => {
 export default DevelopmentTable;
 
 function ModalEdit({ isOpen, closeModal, getData, selectedLayanan }) {
-  console.log(selectedLayanan);
   const {
     register,
     handleSubmit,
@@ -219,7 +238,7 @@ function ModalEdit({ isOpen, closeModal, getData, selectedLayanan }) {
   const [lesson, setLesson] = useState("");
   const [difficulty, setDifficulty] = useState("");
 
-   async function onSubmit(data) {
+  async function onSubmit(data) {
     try {
       console.log(data);
       setIsLoading(true);
@@ -228,7 +247,10 @@ function ModalEdit({ isOpen, closeModal, getData, selectedLayanan }) {
         id_lesson: lesson,
         difficulty: difficulty,
       };
-      await api_service.put(`/lesson/stages/update/${selectedLayanan?._id}`, formData);
+      await api_service.put(
+        `/lesson/stages/update/${selectedLayanan?._id}`,
+        formData
+      );
       setIsLoading(false);
       getData();
       closeModal();
@@ -238,8 +260,6 @@ function ModalEdit({ isOpen, closeModal, getData, selectedLayanan }) {
       console.log(er);
     }
   }
- 
-
 
   const [lessonData, setLessonData] = useState({
     loading: false,
@@ -524,6 +544,167 @@ function ModalCreate({ isOpen, closeModal, getData }) {
                     </button>
                   </div>
                 </form>
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
+        </div>
+      </Dialog>
+    </Transition>
+  );
+}
+
+function ModalContent({ isOpen, closeModal, getData, selectedLayanan }) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({ resolver: yupResolver(schema) });
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState();
+
+  const [disable, setDisable] = useState(true);
+  const [content, setContent] = useState("");
+
+  async function onSubmit(data) {
+    try {
+      console.log(data.title);
+      setIsLoading(true);
+      const formData = {
+        title: data.title,
+        content: content,
+      };
+      await api_service.put(
+        `/lesson/stages/content/${selectedLayanan._id}`,
+        formData
+      );
+      setIsLoading(false);
+      getData();
+      closeModal();
+    } catch (er) {
+      setErrorMessage(er);
+      setIsLoading(false);
+      console.log(er);
+    }
+  }
+
+  useEffect(() => {
+    if (!content) {
+      setDisable(true);
+    } else {
+      setDisable(false);
+    }
+  }, [content]);
+
+  const [contentData, setContentData] = React.useState({
+    data: [],
+    loading: true,
+  });
+  const getContent = async () => {
+    try {
+      const res = await api_service.get(
+        `/lesson/stages/content/${selectedLayanan._id}`
+      );
+      setContentData({ ...contentData, data: res.data, loading: false });
+      setContent(res.data.content);
+      console.log(res.data.title);
+    } catch (error) {
+      console.log(error);
+      setContentData({ ...contentData, loading: false });
+    }
+  };
+
+  React.useEffect(() => {
+    if (isOpen) {
+      getContent();
+    }
+  }, [isOpen]);
+  return (
+    <Transition appear show={isOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-[99]" onClose={closeModal}>
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-[#000000] bg-opacity-50" />
+        </Transition.Child>
+
+        <div className="fixed inset-0 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                {errorMessage && <Alert message={errorMessage} />}
+                <Dialog.Title
+                  as="h3"
+                  className="mb-5 text-lg font-bold leading-6 text-gray-900"
+                >
+                  Update Content
+                </Dialog.Title>
+                {contentData.loading ? (
+                  <Loading />
+                ) : (
+                  <form onSubmit={handleSubmit(onSubmit)}>
+                    <InputField
+                      register={register}
+                      name={"title"}
+                      label="Title"
+                      extra={"mb-3"}
+                      value={contentData.data?.title}
+                    />
+                    {errors?.title && (
+                      <p className="text-sm italic text-red-500">
+                        Nama Konten tidak boleh kosong
+                      </p>
+                    )}
+                    <label
+                      htmlFor={"konten"}
+                      className={`ml-3 text-sm font-bold text-navy-700 dark:text-white`}
+                    >
+                      Konten
+                    </label>
+                    <ReactQuill
+                      value={content}
+                      onChange={setContent}
+                      className="mt-2 bg-white dark:bg-navy-700"
+                    />
+                    <div className="mt-10 flex items-center">
+                      <button
+                        type="button"
+                        className="border-transparent mr-5 justify-center rounded-md border bg-red-500 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                        onClick={closeModal}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        disabled={disable}
+                        className={`border-transparent flex justify-center rounded-md border ${
+                          disable
+                            ? "cursor-not-allowed bg-gray-300 text-gray-700"
+                            : "bg-blue-100 text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        } px-4 py-2 text-sm font-medium `}
+                      >
+                        {isLoading ? (
+                          <AiOutlineLoading3Quarters className="animate-spin text-xl" />
+                        ) : (
+                          "Submit"
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                )}
               </Dialog.Panel>
             </Transition.Child>
           </div>
