@@ -10,10 +10,12 @@ import Checkbox from "components/checkbox";
 import ReactQuill from "react-quill";
 import InputField from "components/fields/InputField";
 import Loading from "components/Loading";
+import TextField from "components/fields/TextField";
 
 const schema = yup
   .object({
     title: yup.string().required(),
+    description: yup.string().required(),
   })
   .required();
 export default function EditLesson() {
@@ -32,9 +34,8 @@ export default function EditLesson() {
     try {
       let res = await api_service.get(`/lesson/${id}`);
       setData({ ...data, data: res.data[0], loading: false });
-      setImg(res.data[0].photo_url)
-      setDescription(res.data[0].description)
-
+      setImg(res.data[0].photo_url);
+      setDescription(res.data[0].description);
     } catch (error) {
       console.log(error);
       setData({ ...data, loading: false });
@@ -65,7 +66,7 @@ export default function EditLesson() {
       setIsLoading(true);
       const formdata = new FormData();
       formdata.append("title", data.title);
-      formdata.append("description", description);
+      formdata.append("description", data.description);
       selectedCategories.forEach((categoryId) => {
         formdata.append("id_category", categoryId);
       });
@@ -84,13 +85,12 @@ export default function EditLesson() {
   }, []);
 
   React.useEffect(() => {
-    console.log(description, imgData);
-    if (description.length === 0 || description === "<p><br></p>" || !imgData) {
+    if (!imgData) {
       setIsDisable(true);
     } else {
       setIsDisable(false);
     }
-  }, [description, imgData, errors?.title, data.data]);
+  }, [errors?.description, imgData, errors?.title, data.data]);
 
   //   category
   const [categoryData, setCategoryData] = React.useState({
@@ -183,16 +183,13 @@ export default function EditLesson() {
                   </div>
                 ))}
               </div>
-              <label
-                htmlFor={"konten"}
-                className={`ml-3 text-sm font-bold text-navy-700 dark:text-white`}
-              >
-                Konten
-              </label>
-              <ReactQuill
-                value={description}
-                onChange={setDescription}
-                className="mt-2 bg-white dark:bg-navy-700"
+
+              <TextField
+                register={register}
+                id={"description"}
+                label={"konten"}
+                disabled={false}
+                value={data.data?.description}
               />
               <button
                 type="submit"

@@ -7,6 +7,7 @@ import api_service from "api/api_service";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import ReactQuill from "react-quill";
 import InputField from "components/fields/InputField";
+import TextField from "components/fields/TextField";
 import Checkbox from "components/checkbox";
 import thumbnail from "../../../assets/img/thumbnail.jpg";
 import "react-quill/dist/quill.snow.css";
@@ -14,6 +15,7 @@ import "react-quill/dist/quill.snow.css";
 const schema = yup
   .object({
     title: yup.string().required(),
+    description: yup.string().required(),
   })
   .required();
 export default function CreateLesson() {
@@ -49,19 +51,19 @@ export default function CreateLesson() {
     title: "",
     description: "",
     id_category: selectedCategories,
-    photo_url: imgData
-  })
+    photo_url: imgData,
+  });
   async function onSubmit(data) {
     try {
       setIsLoading(true);
       const formdata = new FormData();
       formdata.append("title", data.title);
-      formdata.append("description", description);
+      formdata.append("description", data.description);
       selectedCategories.forEach((categoryId) => {
         formdata.append("id_category", categoryId);
       });
       formdata.append("photo_url", imgData);
-      
+
       await api_service.postWithDocument("/lesson/post", formdata);
       setIsLoading(false);
       navigate(-1, { replace: true });
@@ -72,7 +74,7 @@ export default function CreateLesson() {
   }
 
   React.useEffect(() => {
-    if (description.length === 0 || description === "<p><br></p>" || !imgData) {
+    if (!imgData) {
       setIsDisable(true);
     } else {
       setIsDisable(false);
@@ -159,16 +161,11 @@ export default function CreateLesson() {
                 </div>
               ))}
             </div>
-            <label
-              htmlFor={"konten"}
-              className={`ml-3 text-sm font-bold text-navy-700 dark:text-white`}
-            >
-              Konten
-            </label>
-            <ReactQuill
-              value={description}
-              onChange={setDescription}
-              className="mt-2 bg-white dark:bg-navy-700"
+            <TextField
+              register={register}
+              id={"description"}
+              label={"konten"}
+              disabled={false}
             />
             <button
               type="submit"
