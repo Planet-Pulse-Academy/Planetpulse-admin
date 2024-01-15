@@ -18,7 +18,7 @@ import OptionField from "components/fields/OptionField";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import Loading from "components/Loading";
-
+import TextField from "../../../../components/fields/TextField"
 const schema = yup
   .object({
     title: yup.string().required(),
@@ -283,10 +283,10 @@ function ModalEdit({ isOpen, closeModal, getData, selectedLayanan }) {
 
   useEffect(() => {
     if (isOpen) {
-      setLesson(selectedLayanan?.id_lesson)
-      setDifficulty(selectedLayanan?.difficulty)
+      setLesson(selectedLayanan?.id_lesson);
+      setDifficulty(selectedLayanan?.difficulty);
     }
-  }, [isOpen, selectedLayanan])
+  }, [isOpen, selectedLayanan]);
   function handleChange(e) {
     setLesson(e.target.value);
     console.log(lesson);
@@ -578,7 +578,7 @@ function ModalContent({ isOpen, closeModal, getData, selectedLayanan }) {
       setIsLoading(true);
       const formData = {
         title: data.title,
-        content: content,
+        content: data.content,
       };
       await api_service.put(
         `/lesson/stages/content/${selectedLayanan._id}`,
@@ -604,13 +604,13 @@ function ModalContent({ isOpen, closeModal, getData, selectedLayanan }) {
   }, [content]);
 
   useEffect(() => {
-    reset()
+    reset();
     if (isOpen) {
-      setContent(selectedLayanan?.detail?.content)
+      setContent(selectedLayanan?.detail?.content);
     } else {
-      setContent(null)
+      setContent(null);
     }
-  }, [isOpen, reset, selectedLayanan?.detail])
+  }, [isOpen, reset, selectedLayanan?.detail]);
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-[99]" onClose={closeModal}>
@@ -658,16 +658,14 @@ function ModalContent({ isOpen, closeModal, getData, selectedLayanan }) {
                       Nama Konten tidak boleh kosong
                     </p>
                   )}
-                  <label
-                    htmlFor={"konten"}
-                    className={`ml-3 text-sm font-bold text-navy-700 dark:text-white`}
-                  >
-                    Konten
-                  </label>
-                  <ReactQuill
-                    value={content}
-                    onChange={setContent}
-                    className="mt-2 bg-white dark:bg-navy-700"
+                 
+                  <TextField
+                    register={register}
+                    id={"content"}
+                    label={"konten"}
+                    disabled={false}
+                    value={selectedLayanan?.detail?.content}
+
                   />
                   <div className="mt-10 flex items-center">
                     <button
