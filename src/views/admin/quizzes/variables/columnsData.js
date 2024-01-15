@@ -1,1 +1,1 @@
-export const columnsDataDevelopment = ["QUIZZ ID", "TITLE", "ID STAGES", "QUESTION", "CREATED AT", "ACTION"];
+export const columnsDataDevelopment = ["ID", "TITLE", "STAGES", "QUESTION", "CREATED AT", "ACTION"];

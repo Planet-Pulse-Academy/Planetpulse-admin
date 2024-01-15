@@ -281,6 +281,12 @@ function ModalEdit({ isOpen, closeModal, getData, selectedLayanan }) {
     getLesson();
   }, []);
 
+  useEffect(() => {
+    if (isOpen) {
+      setLesson(selectedLayanan?.id_lesson)
+      setDifficulty(selectedLayanan?.difficulty)
+    }
+  }, [isOpen, selectedLayanan])
   function handleChange(e) {
     setLesson(e.target.value);
     console.log(lesson);
@@ -343,7 +349,7 @@ function ModalEdit({ isOpen, closeModal, getData, selectedLayanan }) {
                     placeholder={"Pilih Lesson"}
                     loading={lessonData.loading}
                     label={"Pilih Lesson"}
-                    value={selectedLayanan?.id_lesson}
+                    value={lesson}
                   />
                   <OptionField
                     handleChange={handleChange2}
@@ -356,7 +362,7 @@ function ModalEdit({ isOpen, closeModal, getData, selectedLayanan }) {
                     placeholder={"Pilih Kesusahan"}
                     loading={false}
                     label={"Pilih Kesusahan"}
-                    value={selectedLayanan?.difficulty}
+                    value={difficulty}
                   />
                   <div className="mt-10 flex items-center">
                     <button
@@ -581,6 +587,7 @@ function ModalContent({ isOpen, closeModal, getData, selectedLayanan }) {
       setIsLoading(false);
       getData();
       closeModal();
+      reset();
     } catch (er) {
       setErrorMessage(er);
       setIsLoading(false);
@@ -596,29 +603,14 @@ function ModalContent({ isOpen, closeModal, getData, selectedLayanan }) {
     }
   }, [content]);
 
-  const [contentData, setContentData] = React.useState({
-    data: [],
-    loading: true,
-  });
-  const getContent = async () => {
-    try {
-      const res = await api_service.get(
-        `/lesson/stages/content/${selectedLayanan._id}`
-      );
-      setContentData({ ...contentData, data: res.data, loading: false });
-      setContent(res.data.content);
-      console.log(res.data.title);
-    } catch (error) {
-      console.log(error);
-      setContentData({ ...contentData, loading: false });
-    }
-  };
-
-  React.useEffect(() => {
+  useEffect(() => {
+    reset()
     if (isOpen) {
-      getContent();
+      setContent(selectedLayanan?.detail?.content)
+    } else {
+      setContent(null)
     }
-  }, [isOpen]);
+  }, [isOpen, reset, selectedLayanan?.detail])
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-[99]" onClose={closeModal}>
@@ -653,58 +645,54 @@ function ModalContent({ isOpen, closeModal, getData, selectedLayanan }) {
                 >
                   Update Content
                 </Dialog.Title>
-                {contentData.loading ? (
-                  <Loading />
-                ) : (
-                  <form onSubmit={handleSubmit(onSubmit)}>
-                    <InputField
-                      register={register}
-                      name={"title"}
-                      label="Title"
-                      extra={"mb-3"}
-                      value={contentData.data?.title}
-                    />
-                    {errors?.title && (
-                      <p className="text-sm italic text-red-500">
-                        Nama Konten tidak boleh kosong
-                      </p>
-                    )}
-                    <label
-                      htmlFor={"konten"}
-                      className={`ml-3 text-sm font-bold text-navy-700 dark:text-white`}
+                <form onSubmit={handleSubmit(onSubmit)}>
+                  <InputField
+                    register={register}
+                    name={"title"}
+                    label="Title"
+                    extra={"mb-3"}
+                    value={selectedLayanan?.detail?.title}
+                  />
+                  {errors?.title && (
+                    <p className="text-sm italic text-red-500">
+                      Nama Konten tidak boleh kosong
+                    </p>
+                  )}
+                  <label
+                    htmlFor={"konten"}
+                    className={`ml-3 text-sm font-bold text-navy-700 dark:text-white`}
+                  >
+                    Konten
+                  </label>
+                  <ReactQuill
+                    value={content}
+                    onChange={setContent}
+                    className="mt-2 bg-white dark:bg-navy-700"
+                  />
+                  <div className="mt-10 flex items-center">
+                    <button
+                      type="button"
+                      className="border-transparent mr-5 justify-center rounded-md border bg-red-500 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                      onClick={closeModal}
                     >
-                      Konten
-                    </label>
-                    <ReactQuill
-                      value={content}
-                      onChange={setContent}
-                      className="mt-2 bg-white dark:bg-navy-700"
-                    />
-                    <div className="mt-10 flex items-center">
-                      <button
-                        type="button"
-                        className="border-transparent mr-5 justify-center rounded-md border bg-red-500 px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                        onClick={closeModal}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        disabled={disable}
-                        className={`border-transparent flex justify-center rounded-md border ${
-                          disable
-                            ? "cursor-not-allowed bg-gray-300 text-gray-700"
-                            : "bg-blue-100 text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                        } px-4 py-2 text-sm font-medium `}
-                      >
-                        {isLoading ? (
-                          <AiOutlineLoading3Quarters className="animate-spin text-xl" />
-                        ) : (
-                          "Submit"
-                        )}
-                      </button>
-                    </div>
-                  </form>
-                )}
+                      Cancel
+                    </button>
+                    <button
+                      disabled={disable}
+                      className={`border-transparent flex justify-center rounded-md border ${
+                        disable
+                          ? "cursor-not-allowed bg-gray-300 text-gray-700"
+                          : "bg-blue-100 text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                      } px-4 py-2 text-sm font-medium `}
+                    >
+                      {isLoading ? (
+                        <AiOutlineLoading3Quarters className="animate-spin text-xl" />
+                      ) : (
+                        "Submit"
+                      )}
+                    </button>
+                  </div>
+                </form>
               </Dialog.Panel>
             </Transition.Child>
           </div>

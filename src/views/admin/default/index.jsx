@@ -29,7 +29,7 @@ const Dashboard = () => {
   }
   async function getTotalDesa() {
     try {
-      const res = await api_service.get("/lesson/question");
+      const res = await api_service.get("/admin/question");
       setTotalDesa(res.data.length);
     } catch (er) {
       console.log(er);

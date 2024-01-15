@@ -30,7 +30,7 @@ focus:border-blue-600 focus:bg-white focus:text-gray-700 focus:outline-none"
         {!loading ? (
           data.map((i, key) => (
             <option key={key} value={i._id}>
-              {i.title}
+              {i.title ?? i.name}
             </option>
           ))
         ) : (
