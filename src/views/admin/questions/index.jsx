@@ -8,12 +8,18 @@ export default function Questions() {
     loading: false,
     error: false,
     data: [],
+    max: null,
   });
-  const getData = async () => {
+
+  const getData = async (page, key, limit) => {
     try {
       setData({ ...data, loading: true });
-      const res = await api_service.get("/admin/question");
-      setData({ ...data, data: res.data, loading: false });
+      const res = await api_service.get(
+        `/admin/question${page !== undefined ? `?page=${page}` : ""}${
+          key !== undefined ? `&key=${key}` : ""
+        }`
+      );
+      setData({ ...data, data: res.data, loading: false, max: res.maxPage });
     } catch (error) {
       setData({ ...data, error: true, loading: false });
       console.log(error);
@@ -24,7 +30,11 @@ export default function Questions() {
   }, []);
   return (
     <div className="mt-5 h-full">
-      <DevelopmentTable header={columnsDataDevelopment} getData={getData} data={data} />
+      <DevelopmentTable
+        header={columnsDataDevelopment}
+        getData={getData}
+        data={data}
+      />
     </div>
   );
 }
