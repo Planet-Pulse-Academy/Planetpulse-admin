@@ -538,7 +538,6 @@ function ModalQuestion({ isOpen, closeModal, getData, selectedLayanan }) {
       const formdata = {
         questions: selectedQuestion,
       };
-      console.log(formdata);
       await api_service.put(`/lesson/quiz/${selectedLayanan?._id}`, formdata);
       setIsLoading(false);
       getData();

@@ -28,7 +28,7 @@ const DevelopmentTable = ({ header, data, getData }) => {
   const [isOpenEdit, setIsOpenEdit] = useState(false);
   const [isOpenUp, setIsOpenUp] = useState(false);
   const [selectedLayanan, setSelectedLayanan] = useState(null);
-
+  const [currentPage, setCurrentPage] = useState(1);
   function closeModalDelete() {
     setIsOpenDelete(false);
   }
@@ -54,6 +54,11 @@ const DevelopmentTable = ({ header, data, getData }) => {
   function openModalUp() {
     setIsOpenUp(true);
   }
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    getData(newPage, undefined, 30);
+  };
   return (
     <Card extra={"w-full h-full p-4"}>
       <ModalCreate
@@ -98,6 +103,7 @@ const DevelopmentTable = ({ header, data, getData }) => {
               <FiSearch className="h-4 w-4 text-gray-400 dark:text-white" />
             </p>
             <input
+             onChange={(e) => getData(currentPage, e.target.value, 30)}
               type="text"
               placeholder="Search..."
               className="block h-full w-full rounded-full bg-lightPrimary text-sm font-medium text-navy-700 outline-none placeholder:!text-gray-400 dark:bg-navy-900 dark:text-white dark:placeholder:!text-white sm:w-fit"
@@ -180,6 +186,26 @@ const DevelopmentTable = ({ header, data, getData }) => {
               ))}
             </tbody>
           </table>
+          {/* Pagination controls */}
+          <div className="mt-4 flex items-center">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="mr-2 rounded-full bg-blue-500 px-3 py-1 text-white"
+            >
+              Previous
+            </button>
+            <p className="mr-2 text-gray-600">
+              Page {currentPage} of {data.max}
+            </p>
+            <button
+              disabled={currentPage === data.max}
+              onClick={() => handlePageChange(currentPage + 1)}
+              className="rounded-full bg-blue-500 px-3 py-1 text-white"
+            >
+              Next
+            </button>
+          </div>
           {data.data.length === 0 && (
             <div className="flex justify-center">
               <div className="w-1/4">
@@ -212,7 +238,7 @@ function ModalUp({ isOpen, closeModal, getData }) {
   const [errorMessage, setErrorMessage] = useState();
   const [errorDocument, setErrorDocument] = useState(null);
   const [documentData, setDocumentData] = useState([]);
-  const [docs, setDocs] = useState(null)
+  const [docs, setDocs] = useState(null);
   const [disable, setDisable] = useState(true);
 
   useEffect(() => {
@@ -237,14 +263,12 @@ function ModalUp({ isOpen, closeModal, getData }) {
         // Check if CSV headers match the expected headers
         const csvHeaders = result.meta.fields;
         if (!areHeadersValid(csvHeaders, expectedHeaders)) {
-          
-
           setErrorDocument(
             "Invalid CSV headers. Please make sure the headers match the expected structure."
           );
           return;
         }
-        setDocs(file)
+        setDocs(file);
         if (csvArray.length > 0) {
           // Map headers to their respective indices
           const headerMap = {
@@ -285,6 +309,7 @@ function ModalUp({ isOpen, closeModal, getData }) {
       },
       error: (error) => {
         console.error("CSV parsing error:", error);
+        setErrorDocument("Terjadi kesalahan");
       },
     });
   }
@@ -317,10 +342,8 @@ function ModalUp({ isOpen, closeModal, getData }) {
       }
     }
   }
-  useEffect(() => {
-    console.log(documentData);
-  }, [documentData]);
-  async function onSubmit(data) {
+
+  async function onSubmit() {
     try {
       setIsLoading(true);
       const requestData = documentData.map((question) => ({
@@ -328,9 +351,9 @@ function ModalUp({ isOpen, closeModal, getData }) {
         options: question.options,
         correctOptionIndex: question.correctOptionIndex,
       }));
-  
+
       await api_service.post("/admin/question/bulk-post", requestData);
-  
+
       setIsLoading(false);
       getData();
       closeModal();
@@ -351,6 +374,7 @@ function ModalUp({ isOpen, closeModal, getData }) {
   useEffect(() => {
     reset();
     setDocumentData(null);
+    setDocs(null);
   }, [isOpen, reset]);
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -401,9 +425,7 @@ function ModalUp({ isOpen, closeModal, getData }) {
                     <p
                       className={`text-blue-500 ${documentData && "font-bold"}`}
                     >
-                      {!docs
-                        ? "Upload File csv"
-                        : docs?.name}
+                      {!docs ? "Upload File csv" : docs?.name}
                     </p>
                   </button>
                   <div className="mt-4 flex items-center">
@@ -503,7 +525,6 @@ function ModalEdit({ isOpen, closeModal, getData, selectedLayanan }) {
       const newOptions = selectedLayanan.options.map((option) => ({
         title: option,
       }));
-      console.log(newOptions);
       setOptions(newOptions);
       setCorrectAnswer(selectedLayanan?.correctOptionIndex);
     }
@@ -826,7 +847,6 @@ function ModalCreate({ isOpen, closeModal, getData }) {
 }
 function ModalDelete({ isOpen, closeModal, selectedLayanan, getData }) {
   const [isLoading, setIsLoading] = useState(false);
-  console.log(selectedLayanan);
   async function deleteDesa(id) {
     try {
       setIsLoading(true);

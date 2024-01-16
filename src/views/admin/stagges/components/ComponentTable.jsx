@@ -240,7 +240,6 @@ function ModalEdit({ isOpen, closeModal, getData, selectedLayanan }) {
 
   async function onSubmit(data) {
     try {
-      console.log(data);
       setIsLoading(true);
       const formData = {
         name: data.title,
@@ -289,11 +288,9 @@ function ModalEdit({ isOpen, closeModal, getData, selectedLayanan }) {
   }, [isOpen, selectedLayanan]);
   function handleChange(e) {
     setLesson(e.target.value);
-    console.log(lesson);
   }
   function handleChange2(e) {
     setDifficulty(e.target.value);
-    console.log(e.target.value);
   }
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -405,7 +402,6 @@ function ModalCreate({ isOpen, closeModal, getData }) {
 
   async function onSubmit(data) {
     try {
-      console.log(data);
       setIsLoading(true);
       const formData = {
         name: data.title,
@@ -452,11 +448,9 @@ function ModalCreate({ isOpen, closeModal, getData }) {
 
   function handleChange(e) {
     setLesson(e.target.value);
-    console.log(lesson);
   }
   function handleChange2(e) {
     setDifficulty(e.target.value);
-    console.log(e.target.value);
   }
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -574,7 +568,6 @@ function ModalContent({ isOpen, closeModal, getData, selectedLayanan }) {
 
   async function onSubmit(data) {
     try {
-      console.log(data.title);
       setIsLoading(true);
       const formData = {
         title: data.title,

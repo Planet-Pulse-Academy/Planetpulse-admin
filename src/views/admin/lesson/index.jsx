@@ -30,7 +30,6 @@ const Lesson = () => {
       setData({ ...data, loading: true });
       const res = await api_service.get("/lesson");
       setData({ ...data, data: res.data, loading: false });
-      console.log(res.data);
     } catch (error) {
       console.log(error);
       setData({ ...data, error: true });
