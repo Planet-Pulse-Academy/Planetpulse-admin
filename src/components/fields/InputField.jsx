@@ -13,6 +13,7 @@ function InputField({
   register,
   name,
   value,
+  onChange
 }) {
   return (
     <div className={`${extra}`}>
@@ -29,6 +30,11 @@ function InputField({
         disabled={disabled}
         type={type}
         id={id}
+        onChange={(e) => {
+          if (onChange) {
+            onChange(e.target.value); // Pass the input value to the parent component
+          }
+        }}
         placeholder={placeholder}
         className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white p-3 text-sm outline-none dark:bg-navy-700 dark:bg-opacity-100 ${
           disabled === true

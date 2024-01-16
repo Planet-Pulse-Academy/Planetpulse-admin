@@ -24,7 +24,7 @@ export default function Questions() {
   }, []);
   return (
     <div className="mt-5 h-full">
-      <DevelopmentTable header={columnsDataDevelopment} data={data} />
+      <DevelopmentTable header={columnsDataDevelopment} getData={getData} data={data} />
     </div>
   );
 }
