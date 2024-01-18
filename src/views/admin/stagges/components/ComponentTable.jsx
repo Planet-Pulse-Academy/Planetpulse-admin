@@ -18,7 +18,7 @@ import OptionField from "components/fields/OptionField";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import Loading from "components/Loading";
-import TextField from "../../../../components/fields/TextField"
+import TextField from "../../../../components/fields/TextField";
 const schema = yup
   .object({
     title: yup.string().required(),
@@ -565,12 +565,15 @@ function ModalContent({ isOpen, closeModal, getData, selectedLayanan }) {
 
   const [disable, setDisable] = useState(true);
   const [content, setContent] = useState("");
+  const [url, setUrl] = useState("");
+  const [isValid, setIsValid] = useState(false);
 
   async function onSubmit(data) {
     try {
       setIsLoading(true);
       const formData = {
         title: data.title,
+        url_videos: url,
         content: data.content,
       };
       await api_service.put(
@@ -600,10 +603,42 @@ function ModalContent({ isOpen, closeModal, getData, selectedLayanan }) {
     reset();
     if (isOpen) {
       setContent(selectedLayanan?.detail?.content);
+      setUrl(selectedLayanan?.detail?.url_videos)
+      checkYoutubeUrl(selectedLayanan?.detail?.url_videos)
     } else {
       setContent(null);
+      setIsValid(null)
     }
   }, [isOpen, reset, selectedLayanan?.detail]);
+
+  //
+
+
+  const checkYoutubeUrl = async (i) => {
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/youtube/v3/videos?part=id&id=${extractVideoId(
+          i
+        )}&key=AIzaSyDKFnsk7qjEvgEELJ4GpTwiqY1E68RqfLw`
+      );
+      const data = await response.json();
+
+      if (data.items && data.items.length > 0) {
+        setIsValid(true);
+      } else {
+        setIsValid(false);
+      }
+    } catch (error) {
+      console.error("Error checking YouTube URL:", error);
+      setIsValid(false);
+    }
+  };
+
+  // Helper function to extract video ID from YouTube URL
+  const extractVideoId = (url) => {
+    const match = url.match(/[?&]v=([^?&]+)/);
+    return match ? match[1] : null;
+  };
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-[99]" onClose={closeModal}>
@@ -651,14 +686,40 @@ function ModalContent({ isOpen, closeModal, getData, selectedLayanan }) {
                       Nama Konten tidak boleh kosong
                     </p>
                   )}
-                 
+                  <label
+                    htmlFor="url_videos"
+                    className={`text-sm text-navy-700 dark:text-white`}
+                  >
+                    Video
+                  </label>
+                  <input
+                    type="text"
+                    className="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white p-3 text-sm outline-none dark:bg-navy-700 dark:bg-opacity-100"
+                    value={url}
+                    onChange={(e) => {
+                      setUrl(e.target.value);
+                    }}
+                  />
+                  <button type="button" className="mt-3" onClick={() => checkYoutubeUrl(url)}>
+                    Check YouTube URL
+                  </button>
+
+                  {isValid ? (
+                    <p className="text-sm italic text-green-500">
+                      YouTube URL is valid!
+                    </p>
+                  ) : (
+                    <p className="text-sm italic text-red-500">
+                      YouTube URL is not valid!
+                    </p>
+                  )}
+
                   <TextField
                     register={register}
                     id={"content"}
                     label={"konten"}
                     disabled={false}
                     value={selectedLayanan?.detail?.content}
-
                   />
                   <div className="mt-10 flex items-center">
                     <button
