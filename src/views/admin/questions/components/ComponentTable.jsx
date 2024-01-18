@@ -65,19 +65,27 @@ const DevelopmentTable = ({ header, data, getData }) => {
         closeModal={closeModalCreate}
         isOpen={isOpenCreate}
         getData={getData}
+        currentPage={currentPage}
       />
-      <ModalUp closeModal={closeModalUp} isOpen={isOpenUp} getData={getData} />
+      <ModalUp
+        closeModal={closeModalUp}
+        isOpen={isOpenUp}
+        getData={getData}
+        currentPage={currentPage}
+      />
       <ModalEdit
         closeModal={closeModalEdit}
         isOpen={isOpenEdit}
         getData={getData}
         selectedLayanan={selectedLayanan}
+        currentPage={currentPage}
       />
       <ModalDelete
         getData={getData}
         closeModal={closeModalDelete}
         isOpen={isOpenDelete}
         selectedLayanan={selectedLayanan}
+        currentPage={currentPage}
       />
       <div className="relative flex items-center justify-between">
         <div className="text-xl font-bold text-navy-700 dark:text-white">
@@ -103,7 +111,7 @@ const DevelopmentTable = ({ header, data, getData }) => {
               <FiSearch className="h-4 w-4 text-gray-400 dark:text-white" />
             </p>
             <input
-             onChange={(e) => getData(currentPage, e.target.value, 30)}
+              onChange={(e) => getData(currentPage, e.target.value, 30)}
               type="text"
               placeholder="Search..."
               className="block h-full w-full rounded-full bg-lightPrimary text-sm font-medium text-navy-700 outline-none placeholder:!text-gray-400 dark:bg-navy-900 dark:text-white dark:placeholder:!text-white sm:w-fit"
@@ -227,7 +235,7 @@ const DevelopmentTable = ({ header, data, getData }) => {
 };
 
 export default DevelopmentTable;
-function ModalUp({ isOpen, closeModal, getData }) {
+function ModalUp({ isOpen, closeModal, getData, currentPage }) {
   const {
     register,
     handleSubmit,
@@ -355,7 +363,7 @@ function ModalUp({ isOpen, closeModal, getData }) {
       await api_service.post("/admin/question/bulk-post", requestData);
 
       setIsLoading(false);
-      getData();
+      getData(currentPage, undefined, 30);
       closeModal();
       reset();
     } catch (er) {
@@ -460,7 +468,13 @@ function ModalUp({ isOpen, closeModal, getData }) {
     </Transition>
   );
 }
-function ModalEdit({ isOpen, closeModal, getData, selectedLayanan }) {
+function ModalEdit({
+  isOpen,
+  closeModal,
+  getData,
+  selectedLayanan,
+  currentPage,
+}) {
   const {
     register,
     handleSubmit,
@@ -486,7 +500,7 @@ function ModalEdit({ isOpen, closeModal, getData, selectedLayanan }) {
         formdata
       );
       setIsLoading(false);
-      getData();
+      getData(currentPage, undefined, 30);
       closeModal();
       reset();
     } catch (er) {
@@ -654,7 +668,7 @@ function ModalEdit({ isOpen, closeModal, getData, selectedLayanan }) {
     </Transition>
   );
 }
-function ModalCreate({ isOpen, closeModal, getData }) {
+function ModalCreate({ isOpen, closeModal, getData, currentPage }) {
   const {
     register,
     handleSubmit,
@@ -681,7 +695,7 @@ function ModalCreate({ isOpen, closeModal, getData }) {
       };
       await api_service.post("/admin/question/post", formdata);
       setIsLoading(false);
-      getData();
+      getData(currentPage, undefined, 30);
       closeModal();
       reset();
     } catch (er) {
@@ -845,13 +859,19 @@ function ModalCreate({ isOpen, closeModal, getData }) {
     </Transition>
   );
 }
-function ModalDelete({ isOpen, closeModal, selectedLayanan, getData }) {
+function ModalDelete({
+  isOpen,
+  closeModal,
+  selectedLayanan,
+  getData,
+  currentPage,
+}) {
   const [isLoading, setIsLoading] = useState(false);
   async function deleteDesa(id) {
     try {
       setIsLoading(true);
       await api_service.delete(`/admin/question/${id}`);
-      getData();
+      getData(currentPage, undefined, 30);
       setIsLoading(false);
       closeModal();
     } catch (er) {
