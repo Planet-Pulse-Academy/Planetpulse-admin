@@ -11,12 +11,16 @@ export default function Questions() {
     max: null,
   });
 
-  const getData = async (page, key, limit) => {
+  const getData = async (page, key, limit = 30) => {
     try {
       setData({ ...data, loading: true });
       const res = await api_service.get(
-        `/admin/question${page !== undefined ? `?page=${page}` : ""}${
-          key !== undefined ? `&key=${key}` : ""
+        `/admin/question${
+          page !== undefined
+            ? `?page=${page}&limit=${limit}`
+            : `?limit=${limit}`
+        }${
+          key !== undefined ? `&key=${key}&limit=${limit}` : `?limit=${limit}`
         }`
       );
       setData({ ...data, data: res.data, loading: false, max: res.maxPage });
