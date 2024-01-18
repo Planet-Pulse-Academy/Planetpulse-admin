@@ -592,12 +592,12 @@ function ModalContent({ isOpen, closeModal, getData, selectedLayanan }) {
   }
 
   useEffect(() => {
-    if (!content) {
+    if (!url) {
       setDisable(true);
     } else {
       setDisable(false);
     }
-  }, [content]);
+  }, [url]);
 
   useEffect(() => {
     reset();
