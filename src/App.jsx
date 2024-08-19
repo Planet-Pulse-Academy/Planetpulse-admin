@@ -25,11 +25,29 @@ const App = () => {
       console.log(er);
     }
   };
+
+  const disableRightClick = (event) => {
+    event.preventDefault();
+  };
   useEffect(() => {
     if (localStorage.getItem("token")) {
       authme();
     }
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) {
+        // Tab atau window menjadi tidak terlihat (mungkin pengguna beralih desktop)
+        console.log("Tab atau window tidak terlihat");
+      } else {
+        // Tab atau window kembali terlihat
+        console.log("Tab atau window terlihat");
+      }
+    });
+    document.addEventListener("contextmenu", disableRightClick);
+    return () => {
+      document.removeEventListener("contextmenu", disableRightClick);
+    };
   }, []);
+
   return (
     <Routes>
       <Route
