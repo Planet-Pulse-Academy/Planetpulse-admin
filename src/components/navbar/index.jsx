@@ -4,11 +4,26 @@ import { useNavigate } from "react-router-dom";
 // import { RiMoonFill, RiSunFill } from "react-icons/ri";
 import avatar from "assets/img/avatars/avatar4.png";
 import { HambergerMenu } from "iconsax-react";
+import { jwtDecode } from "jwt-decode";
 
 const Navbar = (props) => {
   const { brandText, onOpenSidenav } = props;
   // const [darkmode, setDarkmode] = React.useState(false);
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  const [decodedToken, setDecodedToken] = React.useState(null);
+  
+  React.useEffect(() => {
+    if (token) {
+      try {
+        const decoded = jwtDecode(token); // Decodes the JWT
+        console.log(decoded?.username);
+        setDecodedToken(decoded?.username);
+      } catch (error) {
+        console.error("Invalid token:", error);
+      }
+    }
+  }, [token]);
   return (
     <nav className="sticky top-4 z-40 flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d]">
       <div className="ml-[6px]">
@@ -61,7 +76,7 @@ const Navbar = (props) => {
               <div className="mt-3 ml-4">
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-bold text-navy-700 dark:text-white">
-                    Hi, Faiz
+                    Hi, {decodedToken}
                   </p>{" "}
                 </div>
               </div>
