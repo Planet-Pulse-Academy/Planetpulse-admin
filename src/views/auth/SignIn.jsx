@@ -28,7 +28,7 @@ export default function SignIn() {
     try {
       const res = await api_service.login(data);
       if (res.status == "Success") {
-        console.log(res);
+        // console.log(res);
         localStorage.setItem("token", res.token);
         setErrorEmail(null);
         setErrorPassword(null);
