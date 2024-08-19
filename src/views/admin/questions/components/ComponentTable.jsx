@@ -167,7 +167,7 @@ const DevelopmentTable = ({ header, data, getData }) => {
                   ))}
                   <td>
                     <p className="my-3 mr-5 text-sm font-bold text-navy-700 dark:text-white">
-                      Answer : {data.correctOptionIndex + 1}
+                      Answer : Option {data.correctOptionIndex + 1}
                     </p>
                   </td>
                   <td>
