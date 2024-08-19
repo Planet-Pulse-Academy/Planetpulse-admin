@@ -417,7 +417,7 @@ function ModalUp({ isOpen, closeModal, getData, currentPage }) {
                   as="h3"
                   className="mb-5 text-lg font-bold leading-6 text-gray-900"
                 >
-                  Create Layanan
+                  Insert Questions
                 </Dialog.Title>
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <button
