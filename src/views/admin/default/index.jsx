@@ -75,12 +75,12 @@ const Dashboard = () => {
           subtitle={totalPegawai}
         />
       </div>
-      <div className="mt-5">
+      {/* <div className="mt-5">
         <DesaTraffic />
-      </div>
-      <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
+      </div> */}
+      {/* <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
         <TotalPengunjung />
-      </div>
+      </div> */}
     </div>
   );
 };
