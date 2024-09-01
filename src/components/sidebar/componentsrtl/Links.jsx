@@ -2,6 +2,7 @@
 import {
   Book,
   Category,
+  Chart,
   Document,
   Gallery,
   Home2,
@@ -44,6 +45,11 @@ export function SidebarLinks() {
         route={"/questions"}
         icon={<Document size="27" variant="Bulk" />}
         name={"Questions"}
+      />
+      <Links
+        route={"/logs"}
+        icon={<Chart size="27" variant="Bulk" />}
+        name={"Logs"}
       />
       <Links
         route={"/category"}
