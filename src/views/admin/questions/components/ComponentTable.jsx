@@ -258,7 +258,7 @@ function ModalUp({ isOpen, closeModal, getData, currentPage }) {
       header: true,
       complete: (result) => {
         const csvArray = result.data;
-
+        
         // Define expected headers
         const expectedHeaders = [
           "text",

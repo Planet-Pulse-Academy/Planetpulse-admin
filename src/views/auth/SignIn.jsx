@@ -23,9 +23,10 @@ export default function SignIn() {
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
   const navigate = useNavigate();
-
+  const [load, setLoad] = useState(false);
   const onSubmit = async (data) => {
     try {
+      setLoad(true);
       const res = await api_service.login(data);
       if (res.status == "Success") {
         // console.log(res);
@@ -37,6 +38,7 @@ export default function SignIn() {
         setErrorPassword(res.messages);
       }
     } catch (er) {
+      setLoad(false)
       console.log(er);
       if (er.message === "email tidak ditemukan") setErrorEmail(er.message);
       if (er.message === "password salah") setErrorPassword(er.message);
@@ -93,7 +95,7 @@ export default function SignIn() {
           </p>
           {/* Checkbox */}
           <button className="linear mt-2 w-full rounded-xl bg-brand-500 py-[12px] text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200">
-            Sign In
+            {load ? "Loading..." : "Sign In "}
           </button>
         </form>
       </div>

@@ -46,11 +46,11 @@ export function SidebarLinks() {
         icon={<Document size="27" variant="Bulk" />}
         name={"Questions"}
       />
-      <Links
+      {/* <Links
         route={"/logs"}
         icon={<Chart size="27" variant="Bulk" />}
         name={"Logs"}
-      />
+      /> */}
       <Links
         route={"/category"}
         icon={<Category size="27" variant="Bulk" />}
